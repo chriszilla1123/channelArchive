@@ -8,10 +8,6 @@ import sys
 import datetime
 from enum import Enum
 
-proxies = [
-    'socks5://atlanta.us.socks.nordhold.net'
-]
-
 channels = []
 base_dir = ""
 install_dir = "/storage/Programming/channelArchive/"
