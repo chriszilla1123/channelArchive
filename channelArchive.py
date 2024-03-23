@@ -10,7 +10,7 @@ from enum import Enum
 
 channels = []
 base_dir = ""
-install_dir = "/storage/Programming/channelArchive/"
+install_dir = ""
 youtube_dl_location = "/usr/bin/yt-dlp"
 print_verbose = False
 logging_options = []
@@ -41,7 +41,15 @@ def main():
 def loadConfiguration():
 ###Loads the configuration and channel options from the 'channelArchive.config' file.
     global base_dir
-    with open(install_dir + 'channelArchive.config') as file:
+    global install_dir
+    install_dir = os.getcwd()
+    config_path = install_dir + '/channelArchive.config'
+    if not os.path.isfile(config_path):
+        log("FAILURE - CONFIG FILE NOT FOUND", 'high')
+        log("Add file channelArchive.config in directory " + install_dir)
+        sys.exit(1)
+    log("Configuration file found at " + config_path)
+    with open(config_path) as file:
         for line in file:
             line = stripWhitespace(line)
             if len(line) == 0:

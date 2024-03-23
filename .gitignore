@@ -1,6 +1,7 @@
 channelArchive.config
 cookies.txt
 log
+.log
 ytdl.log
 venv/
 .idea/
