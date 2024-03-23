@@ -22,26 +22,26 @@ LOGGING_VERBOSE = "verbose"
 LOGGING_DELETED = "deleted"
 
 def main():
-    loadCommandLineArgs(sys.argv)
     timeStart = time.time()
     startMessage = "\n" +  str(datetime.datetime.now()) + "\n"
     startMessage += "channelArchive.py - A youtube channel downloader"
     log(startMessage, "high")
-    loadChannels()
 
-    threads = []
+    loadCommandLineArgs(sys.argv)
+    loadConfiguration()
+
     for channel in channels:
-        loadVideos(channel)
+        fetchVideoMetadata(channel)
         downloadVideos(channel)
 
     timeElapsed = round(time.time() - timeStart, 2)
     log("Finished in " + str(timeElapsed) + " seconds.", "high")
     
 
-def loadChannels():
-###Loads the configuration and channel options from the 'channels' file.
+def loadConfiguration():
+###Loads the configuration and channel options from the 'channelArchive.config' file.
     global base_dir
-    with open(install_dir + 'channels') as file:
+    with open(install_dir + 'channelArchive.config') as file:
         for line in file:
             line = stripWhitespace(line)
             if len(line) == 0:
@@ -71,9 +71,8 @@ def loadChannels():
                 if not os.path.exists(dirToCheck):
                     os.makedirs(dirToCheck)
 
-def loadVideos(channel):
+def fetchVideoMetadata(channel):
 # Gets all the Video IDs from a channel
-# Relies on channel.channelID
     if len(channel.channelURL) <= 0:
         return False
     log("\n" + str(channel), "high")
@@ -115,7 +114,7 @@ def loadVideos(channel):
 
 def downloadVideos(channel):
 #Downloads all the videos from a channel using youtube-dl
-#Relys on channel.videos being set, from the loadVideos function
+#Relys on channel.videos being set, from the fetchVideoMetadata function
     if len(channel.videos) <= 0:
         log("\nNo videos found for " + str(channel))
         return
