@@ -7,7 +7,12 @@
 </head>
 
 <body>
-	<button onclick="start()">Test Button</button>
+	<header>
+		<h1>channelArchive.py</h1>
+		<h1>Web Interface</h1>
+		<button onclick="start()">Start Download</button>
+		<button onclick="clearScreen()">Clear</button>
+	</header>
 	<br>
 	<div id="output"></div>
 </body>
@@ -23,10 +28,39 @@
 	});
 	socket.on('response', function (data) {
 		console.log('Server says: ' + data);
-		document.getElementById('output').innerHTML += data + '<br>\n';
+		document.getElementById('output').innerHTML += data + '<br>\n<hr>';
 	});
 
 	function start() {
 		socket.emit('startDownload');
 	}
+
+	function clearScreen() {
+		document.getElementById('output').innerHTML = '';
+	}
 </script>
+
+<style>
+	body {
+		margin:10px auto;
+		max-width:650px;
+		line-height:1.6;
+		font-size:16px;
+		color:#444;
+		padding:0 5px;
+	}
+
+	h1,h2,h3, header {
+		line-height:1.0;
+		text-align: center;
+	}
+
+	button {
+		color: #444;
+		font-size: 16px;
+	}
+
+	#output {
+		text-align: justify;
+	}
+</style>
