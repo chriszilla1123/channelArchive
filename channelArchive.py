@@ -40,13 +40,14 @@ def main():
     if webui_mode:
         startWebServer()
     else:
-        log(startMessage, "high")
+        startDownload()
 
     timeElapsed = round(time.time() - timeStart, 2)
     log("Finished in " + str(timeElapsed) + " seconds.", "high")
 
 def startDownload():
     global download_in_progress
+    download_in_progress = True
     for channel in channels:
         fetchVideoMetadata(channel)
         downloadVideos(channel)
@@ -192,11 +193,9 @@ def startWebServer():
 
         @socketIO.on('startDownload')
         def handle_startdownload():
-            global download_in_progress
             if download_in_progress:
                 socketIO.emit('response', 'ERR400')
             else:
-                download_in_progress = True
                 socketIO.emit('response', START_MESSAGE)
                 startDownload()
 
