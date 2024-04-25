@@ -1,0 +1,32 @@
+<head>
+	<!DOCTYPE html>
+	<meta charset="utf-8">
+	<meta name="viewport" content="initial-scale=1.0" />
+	<!-- <link rel="stylesheet" href="style.css"> -->
+	<title>channelArchive.py</title>
+</head>
+
+<body>
+	<button onclick="start()">Test Button</button>
+	<br>
+	<div id="output"></div>
+</body>
+
+<!-- SocketIO -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/3.1.3/socket.io.js"></script>
+
+<script type="text/javascript">
+	//Kicks off the download process
+	var socket = io.connect();
+	socket.on('connect', function () {
+		console.log('Connected to the server');
+	});
+	socket.on('response', function (data) {
+		console.log('Server says: ' + data);
+		document.getElementById('output').innerHTML += data + '<br>\n';
+	});
+
+	function start() {
+		socket.emit('startDownload');
+	}
+</script>

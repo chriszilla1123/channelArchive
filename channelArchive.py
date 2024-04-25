@@ -8,14 +8,20 @@ import sys
 import datetime
 from enum import Enum
 
+webServer = None
+socketIO = None
+
 channels = []
 base_dir = ""
 install_dir = ""
 youtube_dl_location = "/usr/bin/yt-dlp"
-print_verbose = False
+dry_run = False
+webui_mode = False
+download_in_progress = False
 logging_options = []
 
 #Constants
+START_MESSAGE = "channelArchive.py - A youtube channel downloader"
 SITE_YOUTUBE = "youtube"
 SITE_RUMBLE = "rumble"
 LOGGING_VERBOSE = "verbose"
@@ -23,20 +29,30 @@ LOGGING_DELETED = "deleted"
 
 def main():
     timeStart = time.time()
+    loadCommandLineArgs(sys.argv)
+    
     startMessage = "\n" +  str(datetime.datetime.now()) + "\n"
-    startMessage += "channelArchive.py - A youtube channel downloader"
+    startMessage += START_MESSAGE
     log(startMessage, "high")
 
-    loadCommandLineArgs(sys.argv)
     loadConfiguration()
 
-    for channel in channels:
-        fetchVideoMetadata(channel)
-        downloadVideos(channel)
+    if webui_mode:
+        startWebServer()
+    else:
+        log(startMessage, "high")
 
     timeElapsed = round(time.time() - timeStart, 2)
     log("Finished in " + str(timeElapsed) + " seconds.", "high")
-    
+
+def startDownload():
+    global download_in_progress
+    for channel in channels:
+        fetchVideoMetadata(channel)
+        downloadVideos(channel)
+    download_in_progress = False
+    if webui_mode:
+        socketIO.emit('response', 'Download process finished')
 
 def loadConfiguration():
 ###Loads the configuration and channel options from the 'channelArchive.config' file.
@@ -130,36 +146,78 @@ def downloadVideos(channel):
     ytdl_log = open(install_dir + 'ytdl.log', 'a+')
     for i, video in enumerate(channel.videos, start=1):
         log("Downloading video (" + str(i) + " / " + str(len(channel.videos)) + "): " + str(video), "high")
-        url = "https://www.youtube.com/watch?v=" + video.videoID
-        outputFile = base_dir + channel.channelDir + '%(upload_date)s - %(title)s - %(id)s.%(ext)s'
-        ytdl_log = open(install_dir + 'ytdl.log', 'a+')
-        myCall = [youtube_dl_location, '-o', outputFile, '-f', 'best', '--cookies', install_dir + 'cookies.txt',  '--',  url]
-        if "--best" in channel.args:
-            myCall = [youtube_dl_location, '-o', outputFile, '-f', 
-                      '((571/272/402/337/315/313/401/336/308/400/271/335/303/299/399/137/248/334/302/298/398/247/136/333/244/135/397/332/243/134/396/331/242/133/395/330/160/394/278)[protocol!=http_dash_segments])+(bestaudio[acodec=opus]/bestaudio[protocol!=http_dash_segments])/best',
-                        '--', url]
-
-        call(myCall, stdout=ytdl_log, stderr=ytdl_log)
-    ytdl_log.close()
+        if not dry_run:
+            url = "https://www.youtube.com/watch?v=" + video.videoID
+            outputFile = base_dir + channel.channelDir + '%(upload_date)s - %(title)s - %(id)s.%(ext)s'
+            ytdl_log = open(install_dir + 'ytdl.log', 'a+')
+            myCall = [youtube_dl_location, '-o', outputFile, '--write-thumbnail', '-f', 'best', '--cookies', install_dir + 'cookies.txt',  '--',  url]
+            if "--best" in channel.args:
+                myCall = [youtube_dl_location, '-o', outputFile, '-f', 
+                        '((571/272/402/337/315/313/401/336/308/400/271/335/303/299/399/137/248/334/302/298/398/247/136/333/244/135/397/332/243/134/396/331/242/133/395/330/160/394/278)[protocol!=http_dash_segments])+(bestaudio[acodec=opus]/bestaudio[protocol!=http_dash_segments])/best',
+                            '--', url]
+            call(myCall, stdout=ytdl_log, stderr=ytdl_log)
+            ytdl_log.close()
 
 def loadCommandLineArgs(args):
     global logging_options
+    global webui_mode
+    global dry_run
 
     for arg in args:
         if arg == "--verbose" or arg == "-v":
             logging_options.append(LOGGING_VERBOSE)
         if arg == "--deleted" or arg == "-d":
             logging_options.append(LOGGING_DELETED)
+        if(arg == "--web" or arg == "-w"):
+            webui_mode = True
+        if(arg == "--dry-run"):
+            dry_run = True
+
+def startWebServer():
+    global webServer
+    global socketIO
+    try:
+        from flask import Flask, Response, send_from_directory
+        from flask_socketio import SocketIO
+        webServer = Flask(__name__)
+        socketIO = SocketIO(webServer);
+
+        @webServer.route('/')
+        def main_route():
+            return send_from_directory('.', path='index.html')
+        
+        @socketIO.on('connect')
+        def handle_connect():
+            print('Client connected')
+
+        @socketIO.on('startDownload')
+        def handle_startdownload():
+            global download_in_progress
+            if download_in_progress:
+                socketIO.emit('response', 'ERR400')
+            else:
+                download_in_progress = True
+                socketIO.emit('response', START_MESSAGE)
+                startDownload()
+
+        socketIO.run(webServer, port=8179, host='0.0.0.0')
+    except:
+        log("Failed to load required dependancy: Flask or flask_socketio", "high")
 
 def log(message, priority="low"):
     global install_dir
+    global webui_mode
     logFile = install_dir + "log"
     with open(logFile, "a+") as file:
         file.write(message + "\n")
     if LOGGING_VERBOSE in logging_options or priority == "high":
         print(message)
+        if webui_mode and socketIO != None:
+            socketIO.emit('response', message)
     elif priority == LOGGING_DELETED and LOGGING_DELETED in logging_options:
         print(message)
+        if webui_mode and socketIO != None:
+            socketIO.emit('response', message)
 
 def stripWhitespace(string):
     return string.strip()
@@ -202,7 +260,6 @@ class Video:
     def __repr__(self):
         return "Video ID: " + self.videoID + " | Channel: " + self.channel.channelName \
                 + " | Title: " + self.title
-
 
 if __name__ == "__main__":
     main()
