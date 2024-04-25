@@ -19,6 +19,7 @@ dry_run = False
 webui_mode = False
 download_in_progress = False
 logging_options = []
+session_history = []
 
 #Constants
 START_MESSAGE = "channelArchive.py - A youtube channel downloader"
@@ -47,13 +48,13 @@ def main():
 
 def startDownload():
     global download_in_progress
+    global session_history
     download_in_progress = True
+    session_history = []
     for channel in channels:
         fetchVideoMetadata(channel)
         downloadVideos(channel)
     download_in_progress = False
-    if webui_mode:
-        socketIO.emit('response', 'Download process finished')
 
 def loadConfiguration():
 ###Loads the configuration and channel options from the 'channelArchive.config' file.
@@ -100,9 +101,9 @@ def loadConfiguration():
 def reloadConfiguration():
     global channels
     channels = []
-    log('reloading configuration file', priority="web")
+    log('Reloading configuration file', priority="web")
     loadConfiguration()
-    log("reload successful. found " + str(len(channels)) + " channels.", "web")
+    log("Reload successful. found " + str(len(channels)) + " channels.", "web")
     for channel in channels:
         log(str(channel), "web")
 
@@ -208,10 +209,18 @@ def startWebServer():
             else:
                 socketIO.emit('response', START_MESSAGE)
                 startDownload()
+                session_history.append(str(START_MESSAGE))
+                socketIO.emit('response', 'Download process finished')
+                session_history.append('Download process finished')
         
         @socketIO.on('reloadConfiguration')
         def handle_reloadConfiguration():
             reloadConfiguration()
+        
+        @socketIO.on('fetchSessionHistory')
+        def handle_fetchSessionHistory():
+            for message in session_history:
+                socketIO.emit('response', message)
 
         socketIO.run(webServer, port=8179, host='0.0.0.0')
     except:
@@ -226,12 +235,15 @@ def log(message, priority="low"):
         print(message)
         if webui_mode and socketIO != None:
             socketIO.emit('response', message)
+            session_history.append(message)
     elif priority == LOGGING_DELETED and LOGGING_DELETED in logging_options:
         print(message)
         if webui_mode and socketIO != None:
             socketIO.emit('response', message)
+            session_history.append(message)
     elif webui_mode and socketIO != None and priority == "web":
         socketIO.emit('response', message)
+        session_history.append(message)
 
 def stripWhitespace(string):
     return string.strip()

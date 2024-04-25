@@ -16,6 +16,8 @@
 		<div id="advancedOptions">
 			<br>
 			<button onclick="reloadServerConfiguration()">Reload .config</button>
+			<br><br>
+			<button onclick="fetchSessionHistory()">Session History</button>
 		</div>
 	</header>
 	<br>
@@ -37,12 +39,13 @@
 	});
 
 	function start() {
+		this.clearScreen();
 		socket.emit('startDownload');
 	}
 
 	function reloadServerConfiguration() {
+		this.clearScreen();
 		socket.emit('reloadConfiguration');
-		console.log("test");
 	}
 
 	function clearScreen() {
@@ -56,6 +59,13 @@
 		} else {
 			element.style.display = "block";
 		}
+	}
+
+	//Fetch the messages from the current session
+	//Useful after reloading the page after refresh or to get the status of previous download
+	function fetchSessionHistory() {
+		this.clearScreen();
+		socket.emit('fetchSessionHistory')
 	}
 </script>
 
