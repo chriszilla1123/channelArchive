@@ -1,6 +1,6 @@
 #Defines the channels channelArchive should download
-#To use this file, rename it to "channels" or copy it using the following command:
-#   cp channels.example channels
+#To use this file, rename it to "channelArchive.config" or copy it using the following command:
+#   cp channelArchive.config.example channelArchive.config
 
 
 #define a base directory
