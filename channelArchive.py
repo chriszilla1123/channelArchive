@@ -58,8 +58,8 @@ def loadConfiguration():
 ###Loads the configuration and channel options from the 'channelArchive.config' file.
     global base_dir
     global install_dir
-    install_dir = os.getcwd()
-    config_path = install_dir + '/channelArchive.config'
+    install_dir = os.getcwd() + '/'
+    config_path = install_dir + 'channelArchive.config'
     if not os.path.isfile(config_path):
         log("FAILURE - CONFIG FILE NOT FOUND", 'high')
         log("Add file channelArchive.config in directory " + install_dir)
@@ -205,7 +205,6 @@ def startWebServer():
         log("Failed to load required dependancy: Flask or flask_socketio", "high")
 
 def log(message, priority="low"):
-    global install_dir
     global webui_mode
     logFile = install_dir + "log"
     with open(logFile, "a+") as file:
