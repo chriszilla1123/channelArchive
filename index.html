@@ -12,6 +12,11 @@
 		<h1>Web Interface</h1>
 		<button onclick="start()">Start Download</button>
 		<button onclick="clearScreen()">Clear</button>
+		<button onclick="toggleAdvanced()">Advanced</button>
+		<div id="advancedOptions">
+			<br>
+			<button onclick="reloadServerConfiguration()">Reload .config</button>
+		</div>
 	</header>
 	<br>
 	<div id="output"></div>
@@ -35,8 +40,22 @@
 		socket.emit('startDownload');
 	}
 
+	function reloadServerConfiguration() {
+		socket.emit('reloadConfiguration');
+		console.log("test");
+	}
+
 	function clearScreen() {
 		document.getElementById('output').innerHTML = '';
+	}
+
+	function toggleAdvanced() {
+		var element = document.getElementById('advancedOptions');
+		if(element.style.display === "block") {
+			element.style.display = "none";
+		} else {
+			element.style.display = "block";
+		}
 	}
 </script>
 
@@ -58,6 +77,10 @@
 	button {
 		color: #444;
 		font-size: 16px;
+	}
+
+	#advancedOptions {
+		display: none;
 	}
 
 	#output {

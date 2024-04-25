@@ -96,6 +96,16 @@ def loadConfiguration():
                 if not os.path.exists(dirToCheck):
                     os.makedirs(dirToCheck)
 
+#reloads the configuration file. used by the web UI
+def reloadConfiguration():
+    global channels
+    channels = []
+    log('reloading configuration file', priority="web")
+    loadConfiguration()
+    log("reload successful. found " + str(len(channels)) + " channels.", "web")
+    for channel in channels:
+        log(str(channel), "web")
+
 def fetchVideoMetadata(channel):
 # Gets all the Video IDs from a channel
     if len(channel.channelURL) <= 0:
@@ -192,12 +202,16 @@ def startWebServer():
             print('Client connected')
 
         @socketIO.on('startDownload')
-        def handle_startdownload():
+        def handle_startDownload():
             if download_in_progress:
                 socketIO.emit('response', 'ERR400')
             else:
                 socketIO.emit('response', START_MESSAGE)
                 startDownload()
+        
+        @socketIO.on('reloadConfiguration')
+        def handle_reloadConfiguration():
+            reloadConfiguration()
 
         socketIO.run(webServer, port=8179, host='0.0.0.0')
     except:
@@ -216,6 +230,8 @@ def log(message, priority="low"):
         print(message)
         if webui_mode and socketIO != None:
             socketIO.emit('response', message)
+    elif webui_mode and socketIO != None and priority == "web":
+        socketIO.emit('response', message)
 
 def stripWhitespace(string):
     return string.strip()
@@ -240,10 +256,10 @@ class Channel:
         self.args = args
     
     def __str__(self):
-        return "[Channel Name: " + self.channelName + " | ID: " + self.channelID + "]"
+        return "[Channel: " + self.channelName + " | ID: " + self.channelID + "]"
 
     def __repr__(self):
-        return "[Channel Name: " + self.channelName + " | ID: " + self.channelID + "]"
+        return "[Channel: " + self.channelName + " | ID: " + self.channelID + "]"
         
 class Video:
     def __init__(self, videoID, title, channel):
