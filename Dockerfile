@@ -50,4 +50,4 @@ COPY . .
 EXPOSE 8179
 
 # Run the application.
-CMD python3 channelArchive.py
+CMD python3 channelArchive.py --web
