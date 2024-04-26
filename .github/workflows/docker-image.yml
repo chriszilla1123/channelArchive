@@ -16,6 +16,9 @@ jobs:
     - name: Checkout
       uses: actions/checkout@v4
 
+    - name: Set up QEMU
+      uses: docker/setup-qemu-action@v1
+
     - name: Setup Docker Buildx
       uses: docker/setup-buildx-action@v1
 
@@ -43,5 +46,6 @@ jobs:
         push: true
         tags: |
           chriszilla1123/channelarchive.py:latest
+          chriszilla1123/channelarchive.py:latest-${{ steps.current-time.outputs.formattedTime }}
         cache-from: type=local,src=/tmp/.buildx-cache
         cache-to: type=local,dest=/tmp/.buildx-cache
