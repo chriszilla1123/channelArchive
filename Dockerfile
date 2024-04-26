@@ -36,7 +36,7 @@ RUN adduser \
 # into this layer.
 RUN --mount=type=cache,target=/root/.cache/pip \
     --mount=type=bind,source=requirements.txt,target=requirements.txt \
-    python3 -m pip install --upgrade pip -r requirements.txt
+    python3 -m pip install --no-cache-dir --upgrade pip -r requirements.txt
 
 # Dependencies
 RUN apt-get update \
