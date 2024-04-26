@@ -39,7 +39,8 @@ RUN --mount=type=cache,target=/root/.cache/pip \
     python -m pip install -r requirements.txt
 
 # Dependencies
-RUN apt-get update && apt-get install -y ffmpeg
+RUN add-apt-repository ppa:yt-dlp/stable \
+    && apt-get update && apt-get install -y yt-dlp ffmpeg
 # Copy the source code into the container.
 COPY . .
 
