@@ -66,9 +66,11 @@ def loadConfiguration():
     install_dir = os.getcwd() + "/"
     config_path = install_dir + "channelArchive.config"
     if not os.path.isfile(config_path):
-        log("FAILURE - CONFIG FILE NOT FOUND", "high")
-        log("Add file channelArchive.config in directory " + install_dir)
-        sys.exit(1)
+        config_path = install_dir + "channelArchive.config.example"
+        if not os.path.isfile(config_path):
+            log("FAILURE - CONFIG FILE NOT FOUND", "high")
+            log("Add file channelArchive.config in directory " + install_dir)
+            sys.exit(1)
     log("Configuration file found at " + config_path)
     with open(config_path, encoding="utf-8") as file:
         for line in file:
