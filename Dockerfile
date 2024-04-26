@@ -30,6 +30,12 @@ RUN adduser \
     --uid "${UID}" \
     appuser
 
+# Dependencies
+RUN apt-get update \
+    && apt-get install -y curl ffmpeg python3-dev \
+    && curl -L https://github.com/yt-dlp/yt-dlp/releases/latest/download/yt-dlp -o /usr/bin/yt-dlp \
+    && chmod a+rx /usr/bin/yt-dlp
+
 # Download dependencies as a separate step to take advantage of Docker's caching.
 # Leverage a cache mount to /root/.cache/pip to speed up subsequent builds.
 # Leverage a bind mount to requirements.txt to avoid having to copy them into
@@ -38,11 +44,6 @@ RUN --mount=type=cache,target=/root/.cache/pip \
     --mount=type=bind,source=requirements.txt,target=requirements.txt \
     python3 -m pip install --no-cache-dir --upgrade pip -r requirements.txt
 
-# Dependencies
-RUN apt-get update \
-    && apt-get install -y curl ffmpeg \
-    && curl -L https://github.com/yt-dlp/yt-dlp/releases/latest/download/yt-dlp -o /usr/bin/yt-dlp \
-    && chmod a+rx /usr/bin/yt-dlp
 # Copy the source code into the container.
 COPY . .
 
