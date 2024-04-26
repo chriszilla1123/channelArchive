@@ -40,10 +40,9 @@ RUN --mount=type=cache,target=/root/.cache/pip \
 
 # Dependencies
 RUN apt-get update \
-    #&& apt-get install -y software-properties-common \
-    #&& add-apt-repository ppa:tomtomtom/yt-dlp \
-    && apt-get update \
-    && apt-get install -y yt-dlp ffmpeg
+    && apt-get install -y yt-dlp ffmpeg \
+    && curl -L https://github.com/yt-dlp/yt-dlp/releases/latest/download/yt-dlp -o /usr/bin/yt-dlp \
+    && chmod a+rx ~/.local/bin/yt-dlp  # Make executable
 # Copy the source code into the container.
 COPY . .
 
