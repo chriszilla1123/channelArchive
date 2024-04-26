@@ -235,11 +235,15 @@ def startWebServer():
     global webServer
     global socketIO
     try:
+        import eventlet
+        #must be ran before other imports
+        eventlet.monkey_patch()
+
         from flask import Flask, send_from_directory
         from flask_socketio import SocketIO
 
         webServer = Flask(__name__)
-        socketIO = SocketIO(webServer)
+        socketIO = SocketIO(webServer, async_mode='eventlet')
 
         @webServer.route("/")
         def main_route():
