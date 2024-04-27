@@ -235,10 +235,6 @@ def startWebServer():
     global webServer
     global socketIO
     try:
-        import eventlet
-        #must be ran before other imports
-        eventlet.monkey_patch()
-
         from flask import Flask, send_from_directory
         from flask_socketio import SocketIO
 
@@ -273,7 +269,7 @@ def startWebServer():
             for message in session_history:
                 socketIO.emit("response", message)
 
-        socketIO.run(webServer, port=8179, host="0.0.0.0")
+        socketIO.run(webServer, port=8179, host="0.0.0.0", allow_unsafe_werkzeug=True)
     except ImportError:
         log("Failed to load required dependancy: Flask or flask_socketio", "high")
 
