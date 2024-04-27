@@ -114,9 +114,9 @@ def reloadConfiguration():
     log("Reload successful. found " + str(len(channels)) + " channels.", "web")
     log("channelArchive.py is running in directory: " + install_dir, "web")
     log("using config file at: " + config_path)
-    if(".example" in config_path) {
+    if(".example" in config_path):
         log("    Using example config. Configure your own channelArchive.config file for personal use")
-    }
+
     log("Base channel folder where videos are stored is: " + base_dir, "web")
     for channel in channels:
         log(str(channel), "web")
