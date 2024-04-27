@@ -110,8 +110,8 @@ def reloadConfiguration():
     log("Reloading configuration file", priority="web")
     loadConfiguration()
     log("Reload successful. found " + str(len(channels)) + " channels.", "web")
-    log("channelArchive.py is running in directory: " + install_dir)
-    log("Base channel folder where videos are stored is: " + base_dir)
+    log("channelArchive.py is running in directory: " + install_dir, "web")
+    log("Base channel folder where videos are stored is: " + base_dir, "web")
     for channel in channels:
         log(str(channel), "web")
 
