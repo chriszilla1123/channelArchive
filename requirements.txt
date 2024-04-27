@@ -1,5 +1,4 @@
-setuptools
-wheel
+greenlet==3.0.2
 eventlet==0.36.1
 Flask==3.0.3
 Flask-SocketIO==5.3.6
