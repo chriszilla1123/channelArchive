@@ -239,7 +239,7 @@ def startWebServer():
         from flask_socketio import SocketIO
 
         webServer = Flask(__name__)
-        socketIO = SocketIO(webServer, async_mode='eventlet')
+        socketIO = SocketIO(webServer)
 
         @webServer.route("/")
         def main_route():
