@@ -14,6 +14,7 @@ socketIO = None
 channels = []
 base_dir = ""
 install_dir = ""
+config_path = ""
 youtube_dl_location = "/usr/bin/yt-dlp"
 dry_run = False
 webui_mode = False
@@ -63,6 +64,7 @@ def loadConfiguration():
     ###Loads the configuration and channel options from the 'channelArchive.config' file.
     global base_dir
     global install_dir
+    global config_path
     install_dir = os.getcwd() + "/"
     config_path = install_dir + "channelArchive.config"
     if not os.path.isfile(config_path):
@@ -111,6 +113,10 @@ def reloadConfiguration():
     loadConfiguration()
     log("Reload successful. found " + str(len(channels)) + " channels.", "web")
     log("channelArchive.py is running in directory: " + install_dir, "web")
+    log("using config file at: " + config_path)
+    if(".example" in config_path) {
+        log("    Using example config. Configure your own channelArchive.config file for personal use")
+    }
     log("Base channel folder where videos are stored is: " + base_dir, "web")
     for channel in channels:
         log(str(channel), "web")
