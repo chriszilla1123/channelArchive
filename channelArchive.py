@@ -115,7 +115,7 @@ def reloadConfiguration():
     log("channelArchive.py is running in directory: " + install_dir, "web")
     log("using config file at: " + config_path, "web")
     if(".example" in config_path):
-        log("    Using example config. Configure your own channelArchive.config file for personal use", "web")
+        log("Using example config. Configure your own channelArchive.config file for personal use", "web")
 
     log("Base channel folder where videos are stored is: " + base_dir, "web")
     for channel in channels:
@@ -255,12 +255,14 @@ def startWebServer():
 
         @socketIO.on("connect")
         def handle_connect():
-            print("Client connected")
+            log("Client connected to WebUI", "high")
 
         @socketIO.on("startDownload")
         def handle_startDownload():
+            log("webUI initiated download process", "high")
             if download_in_progress:
-                socketIO.emit("response", "ERR400")
+                log("webUI request to start download was rejected. Download is already in progress", "high")
+                socketIO.emit("response", "ERR400: Download is already in progress")
             else:
                 socketIO.emit("response", START_MESSAGE)
                 startDownload()
@@ -270,10 +272,12 @@ def startWebServer():
 
         @socketIO.on("reloadConfiguration")
         def handle_reloadConfiguration():
+            log("webUI requested to reload the configuration file", "high")
             reloadConfiguration()
 
         @socketIO.on("fetchSessionHistory")
         def handle_fetchSessionHistory():
+            log("webUI requested to fetch the session history", "high")
             for message in session_history:
                 socketIO.emit("response", message)
 
