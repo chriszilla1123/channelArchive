@@ -281,6 +281,7 @@ def startWebServer():
             for message in session_history:
                 socketIO.emit("response", message)
 
+        log("Starting channelArchive.py web server on port 8179", "high")
         socketIO.run(webServer, port=8179, host="0.0.0.0", allow_unsafe_werkzeug=True)
     except ImportError:
         log("Failed to load required dependancy: Flask or flask_socketio", "high")
