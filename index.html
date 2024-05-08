@@ -10,7 +10,7 @@
 		<header>
 			<h1>channelArchive.py</h1>
 			<h1>Web Interface</h1>
-			<button type="button" start()">Start Download</button>
+			<button type="button" onclick="start()">Start Download</button>
 			<button type="button" onclick="clearScreen()">Clear</button>
 			<button type="button" onclick="toggleAdvanced()">Advanced</button>
 			<div id="advancedOptions">
@@ -71,8 +71,8 @@
 
 	<style>
 		body {
+			font:18px/1.5 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
 			margin: 10px auto;
-			max-width: 650px;
 			line-height: 1.6;
 			font-size: 16px;
 			color: #444;
@@ -90,6 +90,9 @@
 		button {
 			color: #444;
 			font-size: 16px;
+			border-radius: 20px;
+			border-width: 0px;
+			padding: 10px;
 		}
 
 		#advancedOptions {
@@ -97,7 +100,21 @@
 		}
 
 		#output {
-			text-align: justify;
+			text-align: left;
+			overflow-wrap: break-word;
+			padding-left: 5px;
+			padding-right: 5px;
+		}
+
+		@media (prefers-color-scheme: dark) {
+			body {
+				color:#c9d1d9;
+				background:#0d1117
+			}
+
+			button {
+				color: #0d1117;
+			}
 		}
 	</style>
 </html>
