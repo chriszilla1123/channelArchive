@@ -202,7 +202,6 @@ def downloadVideos(channel):
                 youtube_dl_location,
                 "-o",
                 outputFile,
-                "--write-thumbnail",
                 "-f",
                 "best",
                 "--cookies",
