@@ -1,0 +1,11 @@
+name: channelarchive
+services:
+    channelarchive:
+        container_name: channelArchive.py
+        ports:
+            - 8179:8179
+        volumes:
+            - /storage/Documents/channelArchive.config:/app/channelArchive.config
+            - /storage/Youtube/:/channelarchive/Youtube/
+        image: chriszilla1123/channelarchive.py
+        restart: unless-stopped
